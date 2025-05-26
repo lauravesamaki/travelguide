@@ -27,12 +27,7 @@ function App() {
         role: 'assistant',
         content: res.data.response
       };
-      botMessage.content = botMessage.content.replace(/\*\*(.*?)\*\*/g, '$1');
-      const listItems = botMessage.content.match(/- (.*?)(\n|$)/g);
-      if (listItems) {
-        const formattedList = listItems.map(item => `<li>${item.replace(/- /, '')}</li>`).join('');
-        botMessage.content = `<ul>${formattedList}</ul>`;
-      }
+      
       setMessages(prev => [...prev, botMessage]);
       setHistory([...newHistory, botMessage]);
     }
@@ -80,6 +75,24 @@ function App() {
     }
   }, [messages]);
 
+
+  // Scroll to the bottom of the chat container when messages change
+  useEffect(() => {
+    const chatContainer = document.querySelector('.messages');
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages]);
+
+  // Check if input is empty or contains only spaces
+  useEffect(() => {
+    if (input.trim() === '') {
+      document.querySelector('button').disabled = true;
+    } else {
+      document.querySelector('button').disabled = false;
+    }
+  }, [input]);
+
   return (
     <>
       <div className="header">
@@ -90,7 +103,7 @@ function App() {
           {messages.map((message, index) => (
             <div key={index} class={`${message.role}` === 'user' ? 'chat chat-sender max-w-4/5 w-fit justify-self-end' : 'chat chat-receiver max-w-4/5 w-fit'}>
               <div class="chat-header text-base-content">{message.role === 'user' ? 'You' : 'Voya'}</div>
-              <div class="chat-bubble">{message.content}</div>
+              <div class="chat-bubble text-left">{message.content}</div>
             </div>
           ))}
           {messages.length > 0 && messages[messages.length - 1].role === 'user' && (

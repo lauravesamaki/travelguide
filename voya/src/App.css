@@ -95,6 +95,13 @@ button {
   width: fit-content;
   margin: auto 0;
 }
+
 button:hover {
   background-color: #3e3e3e;
+  border-color: #858484;
+}
+
+button:disabled {
+  background-color: #2e2e2e;
+  cursor: not-allowed;
 }
