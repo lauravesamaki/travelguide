@@ -1,32 +1,84 @@
 import './App.css'
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 function App() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
+  const [history, setHistory] = useState([]);
 
   const sendMessage = async () => {
     const userMessage = {
       role: 'user',
       content: input
     };
+
+    const newHistory = [...history, userMessage];
+
     setMessages([...messages, userMessage]);
     setInput('');
 
     try {
       const res = await axios.post('http://localhost:8000/chat', {
-        message: input});
+        message: input,
+        history: newHistory
+      });
       const botMessage = {
         role: 'assistant',
         content: res.data.response
       };
+      botMessage.content = botMessage.content.replace(/\*\*(.*?)\*\*/g, '$1');
+      const listItems = botMessage.content.match(/- (.*?)(\n|$)/g);
+      if (listItems) {
+        const formattedList = listItems.map(item => `<li>${item.replace(/- /, '')}</li>`).join('');
+        botMessage.content = `<ul>${formattedList}</ul>`;
+      }
       setMessages(prev => [...prev, botMessage]);
+      setHistory([...newHistory, botMessage]);
     }
     catch (error) {
       console.error('Error sending message:', error);
     }
   };
+
+  // when app loads, it should trigger a chat with the bot
+  const loadChat = async () => {
+      try {
+      const usrMsg = {
+        role: 'user',
+        content: 'Hello!'
+      }
+      const initialHistory = [...history, usrMsg];
+      
+      const res = await axios.post('http://localhost:8000/chat', {
+        message: usrMsg.content,
+        history: initialHistory
+      });
+      const botMessage = {
+        role: 'assistant',
+        content: res.data.response
+      };
+      setMessages(prev => [...prev, botMessage]);
+      setHistory([...initialHistory, botMessage]);
+    }
+    catch (error) {
+      console.error('Error loading chat:', error);
+    }
+  };
+
+  // Load chat when the component mounts
+  const initialLoad = useRef(true);
+  useEffect(() => {
+    if (initialLoad.current) {
+      loadChat();
+      initialLoad.current = false;
+    }
+    // Scroll to the bottom of the chat container
+    const chatContainer = document.querySelector('.messages');
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages]);
 
   return (
     <>
@@ -34,16 +86,30 @@ function App() {
         <h1>Voya</h1>
       </div>
       <div className="container">
-        <div className="chat-container">
-          <div className="messages">
-            {messages.map((message, index) => (
-              <div key={index} class={`${message.role}` === 'user' ? 'chat chat-sender' : 'chat chat-receiver'}>
-                <div class='chat-bubble'>{message.content}</div>
+        <div class="chat" className="messages">
+          {messages.map((message, index) => (
+            <div key={index} class={`${message.role}` === 'user' ? 'chat chat-sender max-w-4/5 w-fit justify-self-end' : 'chat chat-receiver max-w-4/5 w-fit'}>
+              <div class="chat-header text-base-content">{message.role === 'user' ? 'You' : 'Voya'}</div>
+              <div class="chat-bubble">{message.content}</div>
+            </div>
+          ))}
+          {messages.length > 0 && messages[messages.length - 1].role === 'user' && (
+            <div class="chat chat-receiver">
+              <div class="chat-header text-base-content">Voya</div>
+              <div class="chat-bubble">
+                <span class="loading loading-dots loading-xs"></span>
               </div>
-            ))}
-          </div>
+            </div>
+          ) || messages.length === 0 && (
+            <div class="chat chat-receiver">
+              <div class="chat-header text-base-content">Voya</div>
+              <div class="chat-bubble">
+                <span class="loading loading-dots loading-xs"></span>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="input-container">
+        <div class="input-container">
           <input
             type="text"
             value={input}
