@@ -103,7 +103,7 @@ function App() {
           {messages.map((message, index) => (
             <div key={index} class={`${message.role}` === 'user' ? 'chat chat-sender max-w-4/5 w-fit justify-self-end' : 'chat chat-receiver max-w-4/5 w-fit'}>
               <div class="chat-header text-base-content">{message.role === 'user' ? 'You' : 'Voya'}</div>
-              <div class="chat-bubble text-left">{message.content}</div>
+              <div class={message.role === 'user' ? 'chat-bubble' : 'chat-bubble !bg-secondary'}>{message.content}</div>
             </div>
           ))}
           {messages.length > 0 && messages[messages.length - 1].role === 'user' && (
@@ -122,14 +122,16 @@ function App() {
             </div>
           )}
         </div>
-        <div class="input-container">
+        <div class="input-container mt-6">
           <input
+            class="input input-bordered w-full"
+            placeholder="Type your message here..."
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage(e)}
           />
-          <button onClick={sendMessage}>Send</button>
+          <button onClick={sendMessage} class="btn">Send</button>
         </div>
       </div>
     </>

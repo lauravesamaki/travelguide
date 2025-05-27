@@ -1,21 +1,40 @@
 @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
 @import "tailwindcss";
-@plugin "flyonui";
 @source "./node_modules/flyonui/dist/index.js";
 @plugin "@iconify/tailwind4";
+@plugin "flyonui"{
+  themes:false;
+}
+
 
 @theme {
-  --font-h1: "Quicksand", sans-serif;
+  --default-font-family: "Quicksand", sans-serif;
   --font-size-h1: 3rem;
   --font-size-h2: 2rem;
   --font-size-h3: 1.5rem;
   --font-size-p: 1rem;
   --font-size-small: 0.875rem;
-}
-
-#root {
-  align-self: start;
-  width: calc(100% - 4em);
+  --color-*: initial;
+  --color-base-100: #131414;
+  --color-base-200: #3F4244;
+  --color-base-300: #5C5F62;
+  --color-base-content: oklch(97% 0.001 106.424);
+  --color-primary: #5A694E;
+  --color-secondary: #365346;
+  --color-accent: #3D6787;
+  --color-neutral: #314B5F;
+  --color-info: #053182;
+  --color-success: #1F5418;
+  --color-warning: #A54402;
+  --color-error: #650505;
+  --radius-selector: 2rem;
+  --radius-field: 1rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 1;
 }
 
 .header, .container {
@@ -32,17 +51,17 @@
   border: white 1px solid;
   border-radius: 1em;
   padding: 1em;
-  background-color: #1e1e1e;
   color: white;
   width: 100%;
 }
 
-.messages {
+.chat {
   max-height: 80vh;
   overflow-y: auto;
   overflow-x: hidden;
   white-space: pre-line;
 }
+
 .input-container {
   display: flex;
   flex-direction: row;
@@ -71,37 +90,4 @@ h3 {
 p {
   font-family: var(--font-h1);
   font-size: var(--font-size-p);
-}
-
-input {
-  font-family: var(--font-h1);
-  font-size: var(--font-size-p);
-  padding: 0.5em;
-  border: solid 1px azure;
-  border-radius: 0.5em;
-  color: white;
-  background-color: #2e2e2e;
-  width: 100%;
-}
-
-button {
-  font-family: var(--font-h1);
-  font-size: var(--font-size-p);
-  padding: 0.5em 1em;
-  border-radius: 0.5em;
-  border-color: azure;
-  color: white;
-  cursor: pointer;
-  width: fit-content;
-  margin: auto 0;
-}
-
-button:hover {
-  background-color: #3e3e3e;
-  border-color: #858484;
-}
-
-button:disabled {
-  background-color: #2e2e2e;
-  cursor: not-allowed;
 }
